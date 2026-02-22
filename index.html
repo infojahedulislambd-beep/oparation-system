@@ -1,0 +1,2891 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>কাচ্চি ডাইন স্মার্ট অপারেশন্স</title>
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --primary-dark: #0a58ca;
+            --secondary: #f97316;
+            --success: #198754;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #0dcaf0;
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 12px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1600px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 28px;
+        }
+
+        .logo-text h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .logo-text p {
+            font-size: 0.7rem;
+            opacity: 0.9;
+        }
+
+        .live-badge {
+            background: var(--success);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-warning { background: var(--warning); color: var(--text); }
+        .btn-outline { background: transparent; border: 2px solid white; color: white; }
+        .btn-outline:hover { background: white; color: var(--primary); }
+        .btn-lg { padding: 16px 32px; font-size: 1.1rem; }
+        .btn-sm { padding: 8px 16px; font-size: 0.85rem; }
+        .btn-block { width: 100%; }
+
+        /* Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .stat-card.success { background: linear-gradient(135deg, var(--success) 0%, #0f5132 100%); }
+        .stat-card.danger { background: linear-gradient(135deg, var(--danger) 0%, #a71d2a 100%); }
+        .stat-card.warning { background: linear-gradient(135deg, var(--secondary) 0%, #c2410c 100%); }
+
+        .stat-icon { font-size: 2rem; margin-bottom: 8px; }
+        .stat-value { font-size: 1.8rem; font-weight: 700; }
+        .stat-label { font-size: 0.85rem; opacity: 0.9; }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            background: var(--card);
+            padding: 12px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 10px 18px;
+            background: var(--bg);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Forms */
+        .form-group { margin-bottom: 15px; }
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .form-textarea { min-height: 100px; resize: vertical; }
+
+        /* Tables */
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        tr:hover { background: var(--bg); }
+
+        /* Badges */
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .badge-success { background: rgba(25, 135, 84, 0.15); color: var(--success); }
+        .badge-danger { background: rgba(220, 53, 69, 0.15); color: var(--danger); }
+        .badge-warning { background: rgba(255, 193, 7, 0.3); color: #b7791f; }
+        .badge-info { background: rgba(13, 202, 240, 0.15); color: var(--info); }
+
+        /* Login Screen */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .login-icon { font-size: 4rem; margin-bottom: 15px; }
+        .login-title { font-size: 1.4rem; margin-bottom: 8px; color: var(--primary); }
+        .login-subtitle { color: var(--text-light); margin-bottom: 25px; }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: white;
+            border-radius: var(--radius);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 18px 20px;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body { padding: 20px; }
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Sections */
+        .section { display: none; }
+        .section.active { display: block; }
+
+        /* User Selection */
+        .user-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .user-card {
+            background: var(--card);
+            padding: 18px;
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .user-card:hover {
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .user-card.selected {
+            border-color: var(--secondary);
+            background: rgba(249, 115, 22, 0.1);
+        }
+
+        .user-avatar { font-size: 2.5rem; margin-bottom: 8px; }
+        .user-name { font-weight: 700; font-size: 1rem; }
+        .user-category { color: var(--text-light); font-size: 0.8rem; }
+
+        /* Attendance Grid */
+        .attendance-status {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .attendance-btn {
+            padding: 25px;
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .attendance-btn.present {
+            background: rgba(25, 135, 84, 0.15);
+            border-color: var(--success);
+        }
+
+        .attendance-btn.absent {
+            background: rgba(220, 53, 69, 0.15);
+            border-color: var(--danger);
+        }
+
+        .attendance-btn:hover { transform: scale(1.02); }
+        .attendance-btn.active { border-width: 5px; }
+
+        .attendance-icon { font-size: 2.5rem; margin-bottom: 8px; }
+        .attendance-label { font-weight: 700; font-size: 1.1rem; }
+
+        /* Task Checklist */
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px;
+            background: var(--bg);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .task-item.completed {
+            background: rgba(25, 135, 84, 0.15);
+            border-left: 4px solid var(--success);
+        }
+
+        .task-item input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: var(--success);
+        }
+
+        /* Live Feed */
+        .live-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .feed-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .feed-avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .feed-content { flex: 1; }
+        .feed-name { font-weight: 600; }
+        .feed-action { font-size: 0.85rem; color: var(--text-light); }
+        .feed-time { font-size: 0.75rem; color: var(--text-light); }
+
+        /* Alert Item */
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(220, 53, 69, 0.1);
+            border-left: 4px solid var(--danger);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert-item.warning {
+            background: rgba(255, 193, 7, 0.15);
+            border-left-color: var(--warning);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            height: 10px;
+            background: var(--border);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: var(--primary);
+            color: white;
+            padding: 14px 22px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: none;
+            z-index: 2000;
+            animation: toastSlide 0.3s ease;
+            max-width: 300px;
+        }
+        .toast.active { display: block; }
+        .toast.success { background: var(--success); }
+        .toast.danger { background: var(--danger); }
+        .toast.warning { background: var(--secondary); }
+
+        @keyframes toastSlide {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Offline Indicator */
+        .offline-indicator {
+            position: fixed;
+            top: 60px;
+            right: 15px;
+            background: var(--danger);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: none;
+            z-index: 99;
+            animation: pulse 1s infinite;
+        }
+        .offline-indicator.active { display: block; }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+        .empty-state-icon { font-size: 3rem; margin-bottom: 15px; opacity: 0.5; }
+
+        /* Notice Banner */
+        .notice-banner {
+            background: linear-gradient(135deg, var(--warning) 0%, var(--secondary) 100%);
+            color: var(--text);
+            padding: 15px 20px;
+            border-radius: var(--radius);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notice-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .quick-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .quick-stat {
+            text-align: center;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 8px;
+        }
+        .quick-stat-value { font-size: 1.3rem; font-weight: 700; color: var(--primary); }
+        .quick-stat-label { font-size: 0.75rem; color: var(--text-light); }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: var(--radius);
+        }
+
+        .filter-group { flex: 1; min-width: 140px; }
+        .filter-label { font-size: 0.8rem; color: var(--text-light); margin-bottom: 4px; }
+
+        /* Duty Summary */
+        .duty-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 500px) {
+            .duty-summary { grid-template-columns: 1fr; }
+        }
+
+        .duty-stat {
+            text-align: center;
+            padding: 15px;
+            background: var(--bg);
+            border-radius: 8px;
+        }
+        .duty-stat-value { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+        .duty-stat-label { font-size: 0.8rem; color: var(--text-light); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content { flex-direction: column; text-align: center; }
+            .nav-tabs { flex-direction: column; }
+            .nav-tab { width: 100%; justify-content: center; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .btn-lg { padding: 14px 24px; font-size: 1rem; }
+            th, td { padding: 10px 8px; font-size: 0.8rem; }
+            .attendance-status { grid-template-columns: 1fr; }
+        }
+
+        /* Print */
+        @media print {
+            .header, .nav-tabs, .btn, .no-print, .modal-overlay { display: none !important; }
+            .card { box-shadow: none; border: 1px solid #ddd; }
+            body { background: white; }
+        }
+
+        /* Hidden */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <!-- Offline Indicator -->
+    <div class="offline-indicator" id="offlineIndicator">
+        📴 অফলাইন - স্বয়ংক্রিয় সিঙ্ক চালু হবে
+    </div>
+
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <div class="login-icon">🍛</div>
+            <h2 class="login-title">কাচ্চি ডাইন স্মার্ট অপারেশন্স</h2>
+            <p class="login-subtitle">রিয়েল-টাইম ওয়ার্কফোর্স ম্যানেজমেন্ট</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="btn btn-success btn-lg btn-block" onclick="enterUserMode()">
+                    👤 ইউজার মোড
+                </button>
+                <button class="btn btn-outline btn-lg btn-block" onclick="showAdminLogin()">
+                    🔐 অ্যাডমিন মোড
+                </button>
+            </div>
+
+            <div id="adminLoginForm" class="hidden" style="margin-top: 20px;">
+                <div class="form-group">
+                    <input type="password" class="form-input" id="adminPassword" placeholder="অ্যাডমিন পাসওয়ার্ড দিন">
+                </div>
+                <button class="btn btn-primary btn-block" onclick="verifyAdmin()">
+                    🚀 লগইন করুন
+                </button>
+                <p style="color: var(--danger); margin-top: 10px; display: none;" id="loginError">ভুল পাসও়ার্ড!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div class="hidden" id="mainApp">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🍛</span>
+                    <div class="logo-text">
+                        <h1>কাচ্চি ডাইন স্মার্ট অপারেশন্স</h1>
+                        <p id="branchDisplay">সকল শাখা</p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="live-badge">
+                        <div class="live-dot"></div>
+                        লাইভ
+                    </div>
+                    <button class="btn btn-outline btn-sm" onclick="logout()">
+                        🚪 লগআউট
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- User Section -->
+        <div id="userSection" class="container">
+            <!-- Notice Banner -->
+            <div id="userNotice" class="notice-banner hidden">
+                <span style="font-size: 1.5rem;">📢</span>
+                <div>
+                    <strong>নোটিশ:</strong>
+                    <span id="noticeText"></span>
+                </div>
+                <button class="notice-close" onclick="dismissNotice()">✕</button>
+            </div>
+
+            <!-- Category Selection -->
+            <div id="userCategorySelect">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">👤 আপনার বিভাগ নির্বাচন করুন</h3>
+                    </div>
+                    <div id="categoryButtons" class="user-selection"></div>
+                </div>
+            </div>
+
+            <!-- User Dashboard -->
+            <div id="userDashboard" class="hidden">
+                <div class="nav-tabs">
+                    <button class="nav-tab active" onclick="showUserTab('attendance')">
+                        ✅ উপস্থিতি
+                    </button>
+                    <button class="nav-tab" onclick="showUserTab('duties')">
+                        📋 দায়িত্ব চেকলিস্ট
+                    </button>
+                    <button class="nav-tab" onclick="showUserTab('report')">
+                        📝 দৈনিক রিপোর্ট
+                    </button>
+                    <button class="nav-tab" onclick="showUserTab('alert')">
+                        🚨 সমস্যা রিপোর্ট
+                    </button>
+                </div>
+
+                <!-- Attendance Tab -->
+                <div id="attendanceTab" class="section active">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">📅 আজকের উপস্থিতি</h3>
+                            <span id="currentDate"></span>
+                        </div>
+                        <p style="margin-bottom: 15px; color: var(--text-light);" id="currentUserDisplay"></p>
+                        
+                        <div class="attendance-status">
+                            <div class="attendance-btn present" id="presentBtn" onclick="markAttendance('present')">
+                                <div class="attendance-icon">✅</div>
+                                <div class="attendance-label">উপস্থিত</div>
+                            </div>
+                            <div class="attendance-btn absent" id="absentBtn" onclick="markAttendance('absent')">
+                                <div class="attendance-icon">❌</div>
+                                <div class="attendance-label">অনুপস্থিত</div>
+                            </div>
+                        </div>
+                        <div id="attendanceStatus" style="margin-top: 15px; text-align: center;"></div>
+                    </div>
+                </div>
+
+                <!-- Duties Tab -->
+                <div id="dutiesTab" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">📋 দায়িত্ব চেকলিস্ট</h3>
+                        </div>
+                        <div id="dutiesList"></div>
+                        <button class="btn btn-success btn-block" style="margin-top: 15px;" onclick="submitDuties()">
+                            💾 চেকলিস্ট জমা দিন
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Report Tab -->
+                <div id="reportTab" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">📝 দৈনিক কার্য রিপোর্ট</h3>
+                        </div>
+                        <form id="reportForm">
+                            <div class="form-group">
+                                <label class="form-label">✅ সম্পন্ন কাজ</label>
+                                <textarea class="form-textarea" id="completedWork" placeholder="আজ কী কী কাজ সম্পন্ন হয়েছে..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">⏳ অসম্পূর্ণ কাজ</label>
+                                <textarea class="form-textarea" id="pendingWork" placeholder="কোন কাজ বাকি আছে..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">💬 মন্তব্য / পরামর্শ</label>
+                                <textarea class="form-textarea" id="comments" placeholder="কোনো বিশেষ মন্তব্য..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block btn-lg">
+                                📤 রিপোর্ট জমা দিন
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Alert Tab -->
+                <div id="alertTab" class="section">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">🚨 জরুরি সমস্যা রিপোর্ট</h3>
+                        </div>
+                        <div class="user-selection" id="alertTypes">
+                            <div class="user-card" onclick="selectAlertType('gas')">
+                                <div class="user-avatar">🔥</div>
+                                <div class="user-name">গ্যাস সমস্যা</div>
+                            </div>
+                            <div class="user-card" onclick="selectAlertType('stock')">
+                                <div class="user-avatar">📦</div>
+                                <div class="user-name">স্টক ঘাটতি</div>
+                            </div>
+                            <div class="user-card" onclick="selectAlertType('equipment')">
+                                <div class="user-avatar">🔧</div>
+                                <div class="user-name">যন্ত্রপাতি ত্রুটি</div>
+                            </div>
+                            <div class="user-card" onclick="selectAlertType('other')">
+                                <div class="user-avatar">⚠️</div>
+                                <div class="user-name">অন্যান্য</div>
+                            </div>
+                        </div>
+                        <div id="alertForm" class="hidden">
+                            <div class="form-group">
+                                <label class="form-label">বিস্তারিত বিবরণ</label>
+                                <textarea class="form-textarea" id="alertDetails" placeholder="সমস্যার বিস্তারিত বর্ণনা দিন..."></textarea>
+                            </div>
+                            <button class="btn btn-danger btn-block btn-lg" onclick="submitAlert()">
+                                🚨 জরুরি রিপোর্ট পাঠান
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Section -->
+        <div id="adminSection" class="container hidden">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showAdminTab('dashboard')">
+                    🏠 ড্যাশবোর্ড
+                </button>
+                <button class="nav-tab" onclick="showAdminTab('live')">
+                    📡 লাইভ মনিটর
+                </button>
+                <button class="nav-tab" onclick="showAdminTab('categories')">
+                    📁 বিভাগ
+                </button>
+                <button class="nav-tab" onclick="showAdminTab('branches')">
+                    🏢 শাখা
+                </button>
+                <button class="nav-tab" onclick="showAdminTab('staff')">
+                    👥 স্টাফ
+                </button>
+                <button class="nav-tab" onclick="showAdminTab('shifts')">
+                    ⏰ শিফট
+                </button>
+                <button class="nav-tab" onclick="showAdminTab('attendance')">
+                    ✅ উপস্থিতি
+                </button>
+                <button class="nav-tab" onclick="showAdminTab('reports')">
+                    📊 রিপোর্ট
+                </button>
+                <button class="nav-tab" onclick="showAdminTab('analytics')">
+                    📈 বিশ্লেষণ
+                </button>
+                <button class="nav-tab" onclick="showAdminTab('notice')">
+                    📢 নোটিশ
+                </button>
+                <button class="nav-tab" onclick="showAdminTab('settings')">
+                    ⚙️ সেটিংস
+                </button>
+            </div>
+
+            <!-- Admin Dashboard -->
+            <div id="adminDashboard" class="section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-value" id="totalStaff">0</div>
+                        <div class="stat-label">মোট স্টাফ</div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-value" id="todayPresent">0</div>
+                        <div class="stat-label">আজ উপস্থিত</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-icon">❌</div>
+                        <div class="stat-value" id="todayAbsent">0</div>
+                        <div class="stat-label">আজ অনুপস্থিত</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-value" id="pendingReports">0</div>
+                        <div class="stat-label">রিপোর্ট বাকি</div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">📡 লাইভ অ্যাক্টিভিটি</h3>
+                        </div>
+                        <div class="live-feed" id="liveFeed"></div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">🚨 জরুরি সতর্কতা</h3>
+                        </div>
+                        <div id="adminAlerts"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📊 বিভাগীয় পারফরম্যান্স</h3>
+                    </div>
+                    <div id="categoryPerformance"></div>
+                </div>
+            </div>
+
+            <!-- Live Monitor -->
+            <div id="adminLive" class="section">
+                <div class="stats-grid">
+                    <div class="stat-card success">
+                        <div class="stat-icon">🟢</div>
+                        <div class="stat-value" id="livePresent">0</div>
+                        <div class="stat-label">এখন উপস্থিত</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-icon">🔴</div>
+                        <div class="stat-value" id="liveAbsent">0</div>
+                        <div class="stat-label">অনুপস্থিত</div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">🟡</div>
+                        <div class="stat-value" id="livePending">0</div>
+                        <div class="stat-label">রিপোর্ট দেয়নি</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">👥 বর্তমান অবস্থা</h3>
+                    </div>
+                    <div id="liveStaffStatus"></div>
+                </div>
+            </div>
+
+            <!-- Categories Management -->
+            <div id="adminCategories" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📁 বিভাগ ব্যবস্থাপনা</h3>
+                        <button class="btn btn-primary btn-sm" onclick="openCategoryModal()">
+                            ➕ নতুন বিভাগ
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>নাম</th>
+                                    <th>দায়িত্ব</th>
+                                    <th>স্টাফ</th>
+                                    <th>ক্রিয়া</th>
+                                </tr>
+                            </thead>
+                            <tbody id="categoriesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Branches Management -->
+            <div id="adminBranches" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🏢 শাখা ব্যবস্থাপনা</h3>
+                        <button class="btn btn-primary btn-sm" onclick="openBranchModal()">
+                            ➕ নতুন শাখা
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>শাখার নাম</th>
+                                    <th>অবস্থান</th>
+                                    <th>স্টাফ</th>
+                                    <th>ক্রিয়া</th>
+                                </tr>
+                            </thead>
+                            <tbody id="branchesTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Staff Management -->
+            <div id="adminStaff" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">👥 স্টাফ ব্যবস্থাপনা</h3>
+                        <button class="btn btn-primary btn-sm" onclick="openStaffModal()">
+                            ➕ নতুন স্টাফ
+                        </button>
+                    </div>
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <div class="filter-label">শাখা</div>
+                            <select class="form-select" id="staffFilterBranch" onchange="filterStaff()">
+                                <option value="">সকল শাখা</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <div class="filter-label">বিভাগ</div>
+                            <select class="form-select" id="staffFilterCategory" onchange="filterStaff()">
+                                <option value="">সকল বিভাগ</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>নাম</th>
+                                    <th>বিভাগ</th>
+                                    <th>শাখা</th>
+                                    <th>শিফট</th>
+                                    <th>ডিউটি দিন</th>
+                                    <th>ক্রিয়া</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staffTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shifts Management -->
+            <div id="adminShifts" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">⏰ শিফট ব্যবস্থাপনা</h3>
+                        <button class="btn btn-primary btn-sm" onclick="openShiftModal()">
+                            ➕ নতুন শিফট
+                        </button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>শিফট নাম</th>
+                                    <th>সময়</th>
+                                    <th>স্টাফ</th>
+                                    <th>ক্রিয়া</th>
+                                </tr>
+                            </thead>
+                            <tbody id="shiftsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Records -->
+            <div id="adminAttendance" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">✅ উপস্থিতি রেকর্ড</h3>
+                        <button class="btn btn-primary btn-sm" onclick="printAttendance()">
+                            🖨️ প্রিন্ট
+                        </button>
+                    </div>
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <div class="filter-label">তারিখ</div>
+                            <input type="date" class="form-input" id="attendanceDate" onchange="loadAttendanceRecords()">
+                        </div>
+                        <div class="filter-group">
+                            <div class="filter-label">শাখা</div>
+                            <select class="form-select" id="attendanceFilterBranch" onchange="loadAttendanceRecords()">
+                                <option value="">সকল শাখা</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <div class="filter-label">শিফট</div>
+                            <select class="form-select" id="attendanceFilterShift" onchange="loadAttendanceRecords()">
+                                <option value="">সকল শিফট</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>নাম</th>
+                                    <th>বিভাগ</th>
+                                    <th>শাখা</th>
+                                    <th>শিফট</th>
+                                    <th>অবস্থা</th>
+                                    <th>সময়</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports -->
+            <div id="adminReports" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📊 কার্য রিপোর্ট</h3>
+                        <button class="btn btn-primary btn-sm" onclick="exportReports()">
+                            📤 এক্সপোর্ট
+                        </button>
+                    </div>
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <div class="filter-label">হতে</div>
+                            <input type="date" class="form-input" id="reportFromDate" onchange="loadWorkReports()">
+                        </div>
+                        <div class="filter-group">
+                            <div class="filter-label">পর্যন্ত</div>
+                            <input type="date" class="form-input" id="reportToDate" onchange="loadWorkReports()">
+                        </div>
+                        <div class="filter-group">
+                            <div class="filter-label">স্টাফ</div>
+                            <select class="form-select" id="reportFilterStaff" onchange="loadWorkReports()">
+                                <option value="">সকল স্টাফ</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="workReportsList"></div>
+                </div>
+            </div>
+
+            <!-- Analytics -->
+            <div id="adminAnalytics" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📈 মাসিক বিশ্লেষণ</h3>
+                        <select class="form-select" id="analyticsMonth" onchange="loadAnalytics()" style="width: auto;"></select>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="monthlyDutyDays">0</div>
+                            <div class="stat-label">মোট ডিউটি দিন</div>
+                        </div>
+                        <div class="stat-card success">
+                            <div class="stat-value" id="monthlyPresent">0</div>
+                            <div class="stat-label">মোট উপস্থিত</div>
+                        </div>
+                        <div class="stat-card danger">
+                            <div class="stat-value" id="monthlyAbsent">0</div>
+                            <div class="stat-label">মোট অনুপস্থিত</div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-value" id="monthlyReports">0</div>
+                            <div class="stat-label">রিপোর্ট জমা</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">👥 স্টাফ পারফরম্যান্স</h3>
+                        </div>
+                        <div id="staffPerformanceList"></div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">📁 বিভাগ পরিসংখ্যান</h3>
+                        </div>
+                        <div id="categoryStatsList"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🖨️ মাসিক রিপোর্ট</h3>
+                        <button class="btn btn-primary btn-sm" onclick="printMonthlyReport()">
+                            🖨️ প্রিন্ট
+                        </button>
+                    </div>
+                    <div id="monthlyReportContent"></div>
+                </div>
+            </div>
+
+            <!-- Notice -->
+            <div id="adminNotice" class="section">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📢 নোটিশ পাঠান</h3>
+                    </div>
+                    <form id="noticeForm">
+                        <div class="form-group">
+                            <label class="form-label">নোটিশ লিখুন</label>
+                            <textarea class="form-textarea" id="noticeContent" placeholder="নোটিশের বিষয়বস্তু..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">শাখা নির্বাচন</label>
+                            <select class="form-select" id="noticeBranch">
+                                <option value="all">সকল শাখা</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">
+                            📢 নোটিশ প্রকাশ করুন
+                        </button>
+                    </form>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📜 পূর্ববর্তী নোটিশ</h3>
+                    </div>
+                    <div id="noticeHistory"></div>
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div id="adminSettings" class="section">
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">🔐 পাসওয়ার্ড পরিবর্তন</h3>
+                        </div>
+                        <form id="passwordForm">
+                            <div class="form-group">
+                                <label class="form-label">বর্তমান পাসওয়ার্ড</label>
+                                <input type="password" class="form-input" id="currentPassword" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">নতুন পাসওয়ার্ড</label>
+                                <input type="password" class="form-input" id="newPassword" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">পাসওয়ার্ড নিশ্চিত</label>
+                                <input type="password" class="form-input" id="confirmPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">🔐 আপডেট করুন</button>
+                        </form>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">💾 ডেটা ব্যবস্থাপনা</h3>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <button class="btn btn-primary btn-block" onclick="exportData()">
+                                📤 সকল ডেটা এক্সপোর্ট
+                            </button>
+                            <button class="btn btn-success btn-block" onclick="document.getElementById('importFile').click()">
+                                📥 ডেটা ইমপোর্ট
+                            </button>
+                            <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                            <button class="btn btn-danger btn-block" onclick="clearAllData()">
+                                🗑️ সকল ডেটা মুছুন
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">🔒 তারিখ লক করুন</h3>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">এই তারিখের আগের সকল রেকর্ড লক হবে</label>
+                        <input type="date" class="form-input" id="lockDate" onchange="updateLockDate()">
+                    </div>
+                    <p style="color: var(--text-light); font-size: 0.9rem;">লক করা তারিখের রেকর্ড পরিবর্তন করা যাবে না।</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">📊 সিস্টেম তথ্য</h3>
+                    </div>
+                    <div class="quick-stats">
+                        <div class="quick-stat">
+                            <div class="quick-stat-value" id="sysBranches">0</div>
+                            <div class="quick-stat-label">শাখা</div>
+                        </div>
+                        <div class="quick-stat">
+                            <div class="quick-stat-value" id="sysCategories">0</div>
+                            <div class="quick-stat-label">বিভাগ</div>
+                        </div>
+                        <div class="quick-stat">
+                            <div class="quick-stat-value" id="sysStaff">0</div>
+                            <div class="quick-stat-label">স্টাফ</div>
+                        </div>
+                        <div class="quick-stat">
+                            <div class="quick-stat-value" id="sysRecords">0</div>
+                            <div class="quick-stat-label">রেকর্ড</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>📁 বিভাগ যোগ/সম্পাদনা</h3>
+                <button class="modal-close" onclick="closeModal('categoryModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="categoryForm">
+                    <input type="hidden" id="categoryId">
+                    <div class="form-group">
+                        <label class="form-label">বিভাগের নাম</label>
+                        <input type="text" class="form-input" id="categoryName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">আইকন (ইমোজি)</label>
+                        <input type="text" class="form-input" id="categoryIcon" placeholder="👔" maxlength="2">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">দায়িত্ব তালিকা (প্রতিটি লাইনে একটি)</label>
+                        <textarea class="form-textarea" id="categoryDuties" placeholder="দায়িত্ব ১&#10;দায়িত্ব ২&#10;দায়িত্ব ৩"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">💾 সংরক্ষণ</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="branchModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>🏢 শাখা যোগ/সম্পাদনা</h3>
+                <button class="modal-close" onclick="closeModal('branchModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="branchForm">
+                    <input type="hidden" id="branchId">
+                    <div class="form-group">
+                        <label class="form-label">শাখার নাম</label>
+                        <input type="text" class="form-input" id="branchName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">অবস্থান</label>
+                        <input type="text" class="form-input" id="branchLocation">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">💾 সংরক্ষণ</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="staffModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>👥 স্টাফ যোগ/সম্পাদনা</h3>
+                <button class="modal-close" onclick="closeModal('staffModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="staffForm">
+                    <input type="hidden" id="staffId">
+                    <div class="form-group">
+                        <label class="form-label">নাম</label>
+                        <input type="text" class="form-input" id="staffName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">বিভাগ</label>
+                        <select class="form-select" id="staffCategory" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">শাখা</label>
+                        <select class="form-select" id="staffBranch" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">শিফট</label>
+                        <select class="form-select" id="staffShift" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ফোন</label>
+                        <input type="tel" class="form-input" id="staffPhone">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">💾 সংরক্ষণ</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="shiftModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>⏰ শিফট যোগ/সম্পাদনা</h3>
+                <button class="modal-close" onclick="closeModal('shiftModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="shiftForm">
+                    <input type="hidden" id="shiftId">
+                    <div class="form-group">
+                        <label class="form-label">শিফটের নাম</label>
+                        <input type="text" class="form-input" id="shiftName" required placeholder="সকাল, সন্ধ্যা ইত্যাদি">
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">শুরু</label>
+                            <input type="time" class="form-input" id="shiftStart" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">শেষ</label>
+                            <input type="time" class="form-input" id="shiftEnd" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">💾 সংরক্ষণ</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============ DATABASE & STATE ============
+        let db;
+        let currentUser = null;
+        let isAdmin = false;
+        let selectedAlertType = null;
+        let ADMIN_PASSWORD = 'admin123';
+        let lockDate = null;
+        let broadcastChannel = null;
+
+        const DB_NAME = 'KacchiDineSmartOps';
+        const DB_VERSION = 1;
+
+        // Default data
+        const defaultCategories = [
+            { id: 'cat1', name: 'ম্যানেজার', icon: '👔', duties: 'দোকান তত্ত্বাবধান\nস্টাফ ম্যানেজমেন্ট\nগ্রাহক সমস্যা সমাধান\nবিক্রয় রিপোর্ট পর্যালোচনা' },
+            { id: 'cat2', name: 'ক্যাশিয়ার', icon: '💰', duties: 'বিল তৈরি\nপেমেন্ট গ্রহণ\nক্যাশ ব্যালেন্স\nদৈনিক হিসাব' },
+            { id: 'cat3', name: 'সুপারভাইজার', icon: '📋', duties: 'স্টাফ মনিটরিং\nকাজের মান নিশ্চিত\nসমস্যা রিপোর্ট\nম্যানেজারকে আপডেট' },
+            { id: 'cat4', name: 'বাবুর্চি', icon: '👨‍🍳', duties: 'খাবার রান্না\nরেসিপি অনুসরণ\nরান্নাঘর পরিচ্ছন্নতা\nউপকরণ প্রস্তুত' },
+            { id: 'cat5', name: 'পরিচ্ছন্নতাকারী', icon: '🧹', duties: 'মেঝে পরিষ্কার\nটেবিল মুছা\nবাথরুম পরিচ্ছন্ন\nআবর্জনা নিষ্কাশন' },
+            { id: 'cat6', name: 'পার্সেলম্যান', icon: '📦', duties: 'অর্ডার প্যাকিং\nডেলিভারি কোঅর্ডিনেশন\nঅর্ডার ভেরিফিকেশন\nস্টক আপডেট' },
+            { id: 'cat7', name: 'জুস বার', icon: '🧃', duties: 'জুস তৈরি\nফল কাটা\nযন্ত্রপাতি পরিচ্ছন্নতা\nস্টক চেক' },
+            { id: 'cat8', name: 'বাজার ম্যান', icon: '🛒', duties: 'বাজার করা\nদরদাম\nমালামাল বহন\nস্টক আপডেট' }
+        ];
+
+        const defaultBranches = [
+            { id: 'br1', name: 'মূল শাখা', location: 'ধানমন্ডি' },
+            { id: 'br2', name: 'শাখা ২', location: 'গুলশান' }
+        ];
+
+        const defaultShifts = [
+            { id: 'sh1', name: 'সকাল', start: '08:00', end: '16:00' },
+            { id: 'sh2', name: 'সন্ধ্যা', start: '16:00', end: '00:00' }
+        ];
+
+        // ============ INDEXED DB SETUP ============
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+
+                    const stores = [
+                        { name: 'categories', keyPath: 'id' },
+                        { name: 'branches', keyPath: 'id' },
+                        { name: 'shifts', keyPath: 'id' },
+                        { name: 'staff', keyPath: 'id' },
+                        { name: 'attendance', keyPath: 'id' },
+                        { name: 'duties', keyPath: 'id' },
+                        { name: 'reports', keyPath: 'id' },
+                        { name: 'alerts', keyPath: 'id' },
+                        { name: 'notices', keyPath: 'id' },
+                        { name: 'activity', keyPath: 'id' },
+                        { name: 'settings', keyPath: 'key' }
+                    ];
+
+                    stores.forEach(store => {
+                        if (!database.objectStoreNames.contains(store.name)) {
+                            database.createObjectStore(store.name, { keyPath: store.keyPath });
+                        }
+                    });
+                };
+            });
+        }
+
+        // Generic DB operations
+        function dbAdd(storeName, data) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(storeName, 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.add(data);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function dbPut(storeName, data) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(storeName, 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.put(data);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function dbGet(storeName, key) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(storeName, 'readonly');
+                const store = transaction.objectStore(storeName);
+                const request = store.get(key);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function dbGetAll(storeName) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(storeName, 'readonly');
+                const store = transaction.objectStore(storeName);
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function dbDelete(storeName, key) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(storeName, 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.delete(key);
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function dbClear(storeName) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction(storeName, 'readwrite');
+                const store = transaction.objectStore(storeName);
+                const request = store.clear();
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // ============ REAL-TIME SYNC ============
+        function initBroadcastChannel() {
+            try {
+                broadcastChannel = new BroadcastChannel('kacchi_dine_sync');
+                broadcastChannel.onmessage = (event) => {
+                    handleSyncMessage(event.data);
+                };
+            } catch (e) {
+                console.log('BroadcastChannel not supported');
+            }
+
+            // Storage event for cross-tab sync
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'kacchi_sync') {
+                    handleSyncMessage(JSON.parse(e.newValue));
+                }
+            });
+        }
+
+        function broadcastSync(data) {
+            if (broadcastChannel) {
+                broadcastChannel.postMessage(data);
+            }
+            localStorage.setItem('kacchi_sync', JSON.stringify(data));
+        }
+
+        async function handleSyncMessage(data) {
+            if (data.type === 'attendance' && isAdmin) {
+                await loadAdminDashboard();
+                await loadLiveMonitor();
+            } else if (data.type === 'report' && isAdmin) {
+                await loadAdminDashboard();
+                await loadWorkReports();
+            } else if (data.type === 'alert' && isAdmin) {
+                await loadAdminDashboard();
+                showToast('🚨 নতুন জরুরি রিপোর্ট!', 'danger');
+            } else if (data.type === 'notice' && !isAdmin && currentUser) {
+                await loadUserNotice();
+            } else if (data.type === 'duty' && isAdmin) {
+                await loadAdminDashboard();
+            }
+        }
+
+        // ============ LOCAL STORAGE BACKUP ============
+        function backupToLocalStorage() {
+            const stores = ['categories', 'branches', 'shifts', 'staff', 'attendance', 'duties', 'reports', 'alerts', 'notices', 'settings'];
+            stores.forEach(store => {
+                dbGetAll(store).then(data => {
+                    localStorage.setItem(`kd_${store}`, JSON.stringify(data));
+                });
+            });
+        }
+
+        // ============ INITIALIZATION ============
+        async function initApp() {
+            await initDB();
+            initBroadcastChannel();
+
+            // Load settings
+            const pwdSetting = await dbGet('settings', 'adminPassword');
+            if (pwdSetting) ADMIN_PASSWORD = pwdSetting.value;
+
+            const lockSetting = await dbGet('settings', 'lockDate');
+            if (lockSetting) lockDate = lockSetting.value;
+
+            // Seed default data
+            const categories = await dbGetAll('categories');
+            if (categories.length === 0) {
+                for (const cat of defaultCategories) await dbAdd('categories', cat);
+            }
+
+            const branches = await dbGetAll('branches');
+            if (branches.length === 0) {
+                for (const branch of defaultBranches) await dbAdd('branches', branch);
+            }
+
+            const shifts = await dbGetAll('shifts');
+            if (shifts.length === 0) {
+                for (const shift of defaultShifts) await dbAdd('shifts', shift);
+            }
+
+            // Online/offline detection
+            window.addEventListener('online', handleOnline);
+            window.addEventListener('offline', handleOffline);
+            if (!navigator.onLine) handleOffline();
+
+            // Auto backup
+            setInterval(backupToLocalStorage, 30000);
+
+            console.log('App initialized');
+        }
+
+        function handleOnline() {
+            document.getElementById('offlineIndicator').classList.remove('active');
+            showToast('✅ অনলাইন - সিঙ্ক সচল', 'success');
+        }
+
+        function handleOffline() {
+            document.getElementById('offlineIndicator').classList.add('active');
+            showToast('📴 অফলাইন মোড', 'warning');
+        }
+
+        // ============ UI FUNCTIONS ============
+        function showAdminLogin() {
+            document.getElementById('adminLoginForm').classList.remove('hidden');
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        function verifyAdmin() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                isAdmin = true;
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('adminSection').classList.remove('hidden');
+                loadAdminDashboard();
+                showToast('🎉 অ্যাডমিন হিসেবে লগইন হয়েছে', 'success');
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        async function enterUserMode() {
+            isAdmin = false;
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('userSection').classList.remove('hidden');
+            loadUserCategories();
+            loadUserNotice();
+        }
+
+        function logout() {
+            isAdmin = false;
+            currentUser = null;
+            document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('userSection').classList.remove('hidden');
+            document.getElementById('adminSection').classList.add('hidden');
+            document.getElementById('userCategorySelect').classList.remove('hidden');
+            document.getElementById('userDashboard').classList.add('hidden');
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function showToast(message, type = '') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast active ' + type;
+            setTimeout(() => toast.classList.remove('active'), 3000);
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // ============ USER FUNCTIONS ============
+        async function loadUserCategories() {
+            const categories = await dbGetAll('categories');
+            const container = document.getElementById('categoryButtons');
+            container.innerHTML = categories.map(cat => `
+                <div class="user-card" onclick="selectCategory('${cat.id}')">
+                    <div class="user-avatar">${cat.icon || '👤'}</div>
+                    <div class="user-name">${cat.name}</div>
+                </div>
+            `).join('');
+        }
+
+        async function selectCategory(categoryId) {
+            const staff = await dbGetAll('staff');
+            const categoryStaff = staff.filter(s => s.category === categoryId);
+            const category = await dbGet('categories', categoryId);
+
+            if (categoryStaff.length === 0) {
+                showToast('এই বিভাগে কোনো স্টাফ নেই। অ্যাডমিন স্টাফ যোগ করুন।', 'warning');
+                return;
+            }
+
+            const container = document.getElementById('categoryButtons');
+            container.innerHTML = `
+                <div style="grid-column: 1 / -1; margin-bottom: 10px;">
+                    <button class="btn btn-outline btn-sm" onclick="loadUserCategories()">← বিভাগ নির্বাচন</button>
+                </div>
+                ${categoryStaff.map(s => `
+                    <div class="user-card" onclick="selectStaff('${s.id}')">
+                        <div class="user-avatar">👤</div>
+                        <div class="user-name">${s.name}</div>
+                        <div class="user-category">${category.name}</div>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        async function selectStaff(staffId) {
+            currentUser = await dbGet('staff', staffId);
+            document.getElementById('userCategorySelect').classList.add('hidden');
+            document.getElementById('userDashboard').classList.remove('hidden');
+
+            const category = await dbGet('categories', currentUser.category);
+            const branch = await dbGet('branches', currentUser.branch);
+            const shift = await dbGet('shifts', currentUser.shift);
+
+            document.getElementById('currentUserDisplay').textContent = 
+                `${currentUser.name} | ${category?.name || ''} | ${branch?.name || ''} | ${shift?.name || ''}`;
+
+            const today = new Date();
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('bn-BD', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            checkTodayAttendance();
+            loadUserDuties();
+        }
+
+        async function checkTodayAttendance() {
+            const today = new Date().toISOString().split('T')[0];
+            const attendanceId = `${today}_${currentUser.id}`;
+            const existing = await dbGet('attendance', attendanceId);
+
+            const presentBtn = document.getElementById('presentBtn');
+            const absentBtn = document.getElementById('absentBtn');
+            const statusDiv = document.getElementById('attendanceStatus');
+
+            presentBtn.classList.remove('active');
+            absentBtn.classList.remove('active');
+
+            if (existing) {
+                if (existing.status === 'present') {
+                    presentBtn.classList.add('active');
+                } else {
+                    absentBtn.classList.add('active');
+                }
+                statusDiv.innerHTML = `<span class="badge ${existing.status === 'present' ? 'badge-success' : 'badge-danger'}">
+                    ${existing.status === 'present' ? '✅ উপস্থিত' : '❌ অনুপস্থিত'} - ${existing.time}
+                </span>`;
+            } else {
+                statusDiv.innerHTML = '<span class="badge badge-warning">⏳ এখনো চিহ্নিত হয়নি</span>';
+            }
+        }
+
+        async function markAttendance(status) {
+            if (!currentUser) return;
+
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            const attendanceId = `${todayStr}_${currentUser.id}`;
+
+            // Check lock date
+            if (lockDate && todayStr <= lockDate) {
+                showToast('⚠️ এই তারিখ লক করা আছে', 'warning');
+                return;
+            }
+
+            const attendance = {
+                id: attendanceId,
+                staffId: currentUser.id,
+                staffName: currentUser.name,
+                date: todayStr,
+                time: today.toLocaleTimeString('bn-BD'),
+                status: status,
+                category: currentUser.category,
+                branch: currentUser.branch,
+                shift: currentUser.shift
+            };
+
+            await dbPut('attendance', attendance);
+            backupToLocalStorage();
+
+            // Log activity
+            await logActivity(currentUser.name, status === 'present' ? 'উপস্থিত হয়েছেন' : 'অনুপস্থিত চিহ্নিত');
+
+            // Broadcast sync
+            broadcastSync({ type: 'attendance', data: attendance });
+
+            checkTodayAttendance();
+            showToast(`✅ ${status === 'present' ? 'উপস্থিত' : 'অনুপস্থিত'} চিহ্নিত`, 'success');
+        }
+
+        async function loadUserDuties() {
+            if (!currentUser) return;
+
+            const category = await dbGet('categories', currentUser.category);
+            const duties = (category?.duties || '').split('\n').filter(d => d.trim());
+            const today = new Date().toISOString().split('T')[0];
+
+            // Load saved duty states
+            const savedDuties = await dbGet('duties', `${today}_${currentUser.id}`) || { completed: [] };
+
+            const container = document.getElementById('dutiesList');
+            if (duties.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>কোনো দায়িত্ব নির্ধারিত নেই</p></div>';
+                return;
+            }
+
+            container.innerHTML = duties.map((duty, i) => `
+                <div class="task-item ${savedDuties.completed.includes(i) ? 'completed' : ''}">
+                    <input type="checkbox" id="duty_${i}" ${savedDuties.completed.includes(i) ? 'checked' : ''} 
+                        onchange="toggleDuty(${i})">
+                    <label for="duty_${i}" style="flex: 1; cursor: pointer;">${duty}</label>
+                </div>
+            `).join('');
+        }
+
+        window.dutyStates = {};
+        async function toggleDuty(index) {
+            const today = new Date().toISOString().split('T')[0];
+            const savedDuties = await dbGet('duties', `${today}_${currentUser.id}`) || { completed: [] };
+
+            if (savedDuties.completed.includes(index)) {
+                savedDuties.completed = savedDuties.completed.filter(i => i !== index);
+            } else {
+                savedDuties.completed.push(index);
+            }
+
+            savedDuties.id = `${today}_${currentUser.id}`;
+            savedDuties.staffId = currentUser.id;
+            savedDuties.date = today;
+
+            await dbPut('duties', savedDuties);
+            loadUserDuties();
+        }
+
+        async function submitDuties() {
+            const today = new Date().toISOString().split('T')[0];
+            const savedDuties = await dbGet('duties', `${today}_${currentUser.id}`) || { completed: [] };
+
+            const category = await dbGet('categories', currentUser.category);
+            const totalDuties = (category?.duties || '').split('\n').filter(d => d.trim()).length;
+            const completedCount = savedDuties.completed.length;
+
+            await logActivity(currentUser.name, `দায়িত্ব চেকলিস্ট জমা (${completedCount}/${totalDuties} সম্পন্ন)`);
+            broadcastSync({ type: 'duty', data: { staffId: currentUser.id, completed: completedCount, total: totalDuties } });
+
+            showToast(`✅ ${completedCount}/${totalDuties} দায়িত্ব সম্পন্ন`, 'success');
+        }
+
+        function showUserTab(tab) {
+            document.querySelectorAll('#userDashboard .nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#userDashboard .section').forEach(s => s.classList.remove('active'));
+            event.target.closest('.nav-tab').classList.add('active');
+            document.getElementById(`${tab}Tab`).classList.add('active');
+        }
+
+        // Report form
+        document.getElementById('reportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const today = new Date().toISOString().split('T')[0];
+            const report = {
+                id: `${today}_${currentUser.id}`,
+                staffId: currentUser.id,
+                staffName: currentUser.name,
+                category: currentUser.category,
+                branch: currentUser.branch,
+                date: today,
+                time: new Date().toLocaleTimeString('bn-BD'),
+                completedWork: document.getElementById('completedWork').value,
+                pendingWork: document.getElementById('pendingWork').value,
+                comments: document.getElementById('comments').value
+            };
+
+            await dbPut('reports', report);
+            backupToLocalStorage();
+
+            await logActivity(currentUser.name, 'কার্য রিপোর্ট জমা দিয়েছেন');
+            broadcastSync({ type: 'report', data: report });
+
+            document.getElementById('reportForm').reset();
+            showToast('✅ রিপোর্ট জমা হয়েছে', 'success');
+        });
+
+        // Alert functions
+        function selectAlertType(type) {
+            selectedAlertType = type;
+            document.querySelectorAll('#alertTypes .user-card').forEach(c => c.classList.remove('selected'));
+            event.target.closest('.user-card').classList.add('selected');
+            document.getElementById('alertForm').classList.remove('hidden');
+        }
+
+        async function submitAlert() {
+            if (!currentUser || !selectedAlertType) return;
+
+            const alert = {
+                id: 'alert_' + Date.now(),
+                staffId: currentUser.id,
+                staffName: currentUser.name,
+                branch: currentUser.branch,
+                type: selectedAlertType,
+                details: document.getElementById('alertDetails').value,
+                time: new Date().toLocaleTimeString('bn-BD'),
+                date: new Date().toISOString().split('T')[0],
+                status: 'new'
+            };
+
+            await dbAdd('alerts', alert);
+            backupToLocalStorage();
+
+            await logActivity(currentUser.name, `🚨 জরুরি রিপোর্ট: ${selectedAlertType}`);
+            broadcastSync({ type: 'alert', data: alert });
+
+            document.getElementById('alertDetails').value = '';
+            document.getElementById('alertForm').classList.add('hidden');
+            document.querySelectorAll('#alertTypes .user-card').forEach(c => c.classList.remove('selected'));
+            selectedAlertType = null;
+
+            showToast('🚨 জরুরি রিপোর্ট পাঠানো হয়েছে', 'danger');
+        }
+
+        // Notice
+        async function loadUserNotice() {
+            const notices = await dbGetAll('notices');
+            const activeNotice = notices.sort((a, b) => new Date(b.time) - new Date(a.time))[0];
+
+            if (activeNotice && activeNotice.active) {
+                document.getElementById('noticeText').textContent = activeNotice.content;
+                document.getElementById('userNotice').classList.remove('hidden');
+            }
+        }
+
+        function dismissNotice() {
+            document.getElementById('userNotice').classList.add('hidden');
+        }
+
+        // Activity log
+        async function logActivity(name, action) {
+            const activity = {
+                id: 'act_' + Date.now(),
+                name: name,
+                action: action,
+                time: new Date().toISOString()
+            };
+            await dbAdd('activity', activity);
+        }
+
+        // ============ ADMIN FUNCTIONS ============
+        async function loadAdminDashboard() {
+            const staff = await dbGetAll('staff');
+            const attendance = await dbGetAll('attendance');
+            const reports = await dbGetAll('reports');
+            const alerts = await dbGetAll('alerts');
+            const categories = await dbGetAll('categories');
+
+            const today = new Date().toISOString().split('T')[0];
+            const todayAttendance = attendance.filter(a => a.date === today);
+            const todayPresent = todayAttendance.filter(a => a.status === 'present').length;
+            const todayAbsent = todayAttendance.filter(a => a.status === 'absent').length;
+            const pendingReports = staff.length - todayAttendance.length;
+
+            document.getElementById('totalStaff').textContent = staff.length;
+            document.getElementById('todayPresent').textContent = todayPresent;
+            document.getElementById('todayAbsent').textContent = todayAbsent;
+            document.getElementById('pendingReports').textContent = pendingReports;
+
+            // Live feed
+            const activities = await dbGetAll('activity');
+            const recentActivities = activities.sort((a, b) => new Date(b.time) - new Date(a.time)).slice(0, 10);
+
+            const feedContainer = document.getElementById('liveFeed');
+            if (recentActivities.length === 0) {
+                feedContainer.innerHTML = '<div class="empty-state"><p>কোনো কার্যকলাপ নেই</p></div>';
+            } else {
+                feedContainer.innerHTML = recentActivities.map(act => `
+                    <div class="feed-item">
+                        <div class="feed-avatar">${act.name.charAt(0)}</div>
+                        <div class="feed-content">
+                            <div class="feed-name">${act.name}</div>
+                            <div class="feed-action">${act.action}</div>
+                        </div>
+                        <div class="feed-time">${new Date(act.time).toLocaleTimeString('bn-BD')}</div>
+                    </div>
+                `).join('');
+            }
+
+            // Alerts
+            const newAlerts = alerts.filter(a => a.status === 'new');
+            const alertContainer = document.getElementById('adminAlerts');
+            if (newAlerts.length === 0) {
+                alertContainer.innerHTML = '<div class="empty-state"><p>✅ কোনো জরুরি সতর্কতা নেই</p></div>';
+            } else {
+                alertContainer.innerHTML = newAlerts.map(a => `
+                    <div class="alert-item">
+                        <span style="font-size: 1.5rem;">${a.type === 'gas' ? '🔥' : a.type === 'stock' ? '📦' : a.type === 'equipment' ? '🔧' : '⚠️'}</span>
+                        <div style="flex: 1;">
+                            <strong>${a.staffName}</strong> - ${a.type === 'gas' ? 'গ্যাস সমস্যা' : a.type === 'stock' ? 'স্টক ঘাটতি' : a.type === 'equipment' ? 'যন্ত্রপাতি ত্রুটি' : 'অন্যান্য'}
+                            <p style="font-size: 0.85rem; color: var(--text-light);">${a.details || ''}</p>
+                        </div>
+                        <button class="btn btn-sm btn-success" onclick="resolveAlert('${a.id}')">✓</button>
+                    </div>
+                `).join('');
+            }
+
+            // Category performance
+            const perfContainer = document.getElementById('categoryPerformance');
+            perfContainer.innerHTML = categories.map(cat => {
+                const catStaff = staff.filter(s => s.category === cat.id);
+                const catAttendance = todayAttendance.filter(a => catStaff.find(s => s.id === a.staffId) && a.status === 'present').length;
+                const percentage = catStaff.length > 0 ? Math.round((catAttendance / catStaff.length) * 100) : 0;
+
+                return `
+                    <div style="margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <span>${cat.icon || '📁'} ${cat.name}</span>
+                            <span>${percentage}% (${catAttendance}/${catStaff.length})</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${percentage}%;"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function resolveAlert(id) {
+            const alert = await dbGet('alerts', id);
+            alert.status = 'resolved';
+            await dbPut('alerts', alert);
+            loadAdminDashboard();
+            showToast('✅ সতর্কতা সমাধান করা হয়েছে', 'success');
+        }
+
+        async function loadLiveMonitor() {
+            const staff = await dbGetAll('staff');
+            const attendance = await dbGetAll('attendance');
+            const categories = await dbGetAll('categories');
+            const branches = await dbGetAll('branches');
+            const shifts = await dbGetAll('shifts');
+
+            const today = new Date().toISOString().split('T')[0];
+            const todayAttendance = attendance.filter(a => a.date === today);
+
+            const present = todayAttendance.filter(a => a.status === 'present').length;
+            const absent = todayAttendance.filter(a => a.status === 'absent').length;
+            const pending = staff.length - todayAttendance.length;
+
+            document.getElementById('livePresent').textContent = present;
+            document.getElementById('liveAbsent').textContent = absent;
+            document.getElementById('livePending').textContent = pending;
+
+            const container = document.getElementById('liveStaffStatus');
+            container.innerHTML = staff.map(s => {
+                const att = todayAttendance.find(a => a.staffId === s.id);
+                const cat = categories.find(c => c.id === s.category);
+                const branch = branches.find(b => b.id === s.branch);
+                const shift = shifts.find(sh => sh.id === s.shift);
+
+                const statusBadge = !att ? '<span class="badge badge-warning">🟡 রিপোর্ট দেয়নি</span>' :
+                    att.status === 'present' ? '<span class="badge badge-success">🟢 উপস্থিত</span>' :
+                    '<span class="badge badge-danger">🔴 অনুপস্থিত</span>';
+
+                return `
+                    <div class="task-item">
+                        <div>
+                            <strong>${s.name}</strong>
+                            <p style="font-size: 0.8rem; color: var(--text-light);">
+                                ${cat?.name || ''} | ${branch?.name || ''} | ${shift?.name || ''}
+                            </p>
+                        </div>
+                        ${statusBadge}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showAdminTab(tab) {
+            document.querySelectorAll('#adminSection .nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#adminSection .section').forEach(s => s.classList.remove('active'));
+            event.target.closest('.nav-tab').classList.add('active');
+
+            const tabMap = {
+                'dashboard': 'adminDashboard', 'live': 'adminLive', 'categories': 'adminCategories',
+                'branches': 'adminBranches', 'staff': 'adminStaff', 'shifts': 'adminShifts',
+                'attendance': 'adminAttendance', 'reports': 'adminReports', 'analytics': 'adminAnalytics',
+                'notice': 'adminNotice', 'settings': 'adminSettings'
+            };
+
+            document.getElementById(tabMap[tab]).classList.add('active');
+
+            switch(tab) {
+                case 'dashboard': loadAdminDashboard(); break;
+                case 'live': loadLiveMonitor(); break;
+                case 'categories': loadCategories(); break;
+                case 'branches': loadBranches(); break;
+                case 'staff': loadStaff(); break;
+                case 'shifts': loadShifts(); break;
+                case 'attendance': loadAttendanceRecords(); break;
+                case 'reports': loadWorkReports(); break;
+                case 'analytics': loadAnalytics(); break;
+                case 'notice': loadNoticeForm(); break;
+                case 'settings': loadSettings(); break;
+            }
+        }
+
+        // ============ CATEGORIES ============
+        async function loadCategories() {
+            const categories = await dbGetAll('categories');
+            const staff = await dbGetAll('staff');
+
+            const tbody = document.getElementById('categoriesTable');
+            tbody.innerHTML = categories.map(cat => {
+                const catStaff = staff.filter(s => s.category === cat.id).length;
+                return `
+                    <tr>
+                        <td>${cat.icon || '📁'} ${cat.name}</td>
+                        <td style="max-width: 200px;">${(cat.duties || '').split('\n').slice(0, 2).join(', ')}...</td>
+                        <td>${catStaff}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editCategory('${cat.id}')">✏️</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteCategory('${cat.id}')">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function openCategoryModal() {
+            document.getElementById('categoryForm').reset();
+            document.getElementById('categoryId').value = '';
+            openModal('categoryModal');
+        }
+
+        async function editCategory(id) {
+            const cat = await dbGet('categories', id);
+            document.getElementById('categoryId').value = id;
+            document.getElementById('categoryName').value = cat.name;
+            document.getElementById('categoryIcon').value = cat.icon || '';
+            document.getElementById('categoryDuties').value = cat.duties || '';
+            openModal('categoryModal');
+        }
+
+        async function deleteCategory(id) {
+            if (confirm('এই বিভাগ মুছে ফেলতে চান?')) {
+                await dbDelete('categories', id);
+                backupToLocalStorage();
+                loadCategories();
+                showToast('বিভাগ মুছে ফেলা হয়েছে');
+            }
+        }
+
+        document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('categoryId').value || 'cat_' + Date.now();
+            const category = {
+                id: id,
+                name: document.getElementById('categoryName').value,
+                icon: document.getElementById('categoryIcon').value || '📁',
+                duties: document.getElementById('categoryDuties').value
+            };
+            await dbPut('categories', category);
+            backupToLocalStorage();
+            closeModal('categoryModal');
+            loadCategories();
+            showToast('✅ বিভাগ সংরক্ষিত', 'success');
+        });
+
+        // ============ BRANCHES ============
+        async function loadBranches() {
+            const branches = await dbGetAll('branches');
+            const staff = await dbGetAll('staff');
+
+            const tbody = document.getElementById('branchesTable');
+            tbody.innerHTML = branches.map(br => {
+                const brStaff = staff.filter(s => s.branch === br.id).length;
+                return `
+                    <tr>
+                        <td>${br.name}</td>
+                        <td>${br.location || '-'}</td>
+                        <td>${brStaff}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editBranch('${br.id}')">✏️</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteBranch('${br.id}')">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            updateFilters();
+        }
+
+        function openBranchModal() {
+            document.getElementById('branchForm').reset();
+            document.getElementById('branchId').value = '';
+            openModal('branchModal');
+        }
+
+        async function editBranch(id) {
+            const br = await dbGet('branches', id);
+            document.getElementById('branchId').value = id;
+            document.getElementById('branchName').value = br.name;
+            document.getElementById('branchLocation').value = br.location || '';
+            openModal('branchModal');
+        }
+
+        async function deleteBranch(id) {
+            if (confirm('এই শাখা মুছে ফেলতে চান?')) {
+                await dbDelete('branches', id);
+                backupToLocalStorage();
+                loadBranches();
+                showToast('শাখা মুছে ফেলা হয়েছে');
+            }
+        }
+
+        document.getElementById('branchForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('branchId').value || 'br_' + Date.now();
+            const branch = {
+                id: id,
+                name: document.getElementById('branchName').value,
+                location: document.getElementById('branchLocation').value
+            };
+            await dbPut('branches', branch);
+            backupToLocalStorage();
+            closeModal('branchModal');
+            loadBranches();
+            showToast('✅ শাখা সংরক্ষিত', 'success');
+        });
+
+        // ============ SHIFTS ============
+        async function loadShifts() {
+            const shifts = await dbGetAll('shifts');
+            const staff = await dbGetAll('staff');
+
+            const tbody = document.getElementById('shiftsTable');
+            tbody.innerHTML = shifts.map(sh => {
+                const shStaff = staff.filter(s => s.shift === sh.id).length;
+                return `
+                    <tr>
+                        <td>${sh.name}</td>
+                        <td>${sh.start} - ${sh.end}</td>
+                        <td>${shStaff}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editShift('${sh.id}')">✏️</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteShift('${sh.id}')">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            updateFilters();
+        }
+
+        function openShiftModal() {
+            document.getElementById('shiftForm').reset();
+            document.getElementById('shiftId').value = '';
+            openModal('shiftModal');
+        }
+
+        async function editShift(id) {
+            const sh = await dbGet('shifts', id);
+            document.getElementById('shiftId').value = id;
+            document.getElementById('shiftName').value = sh.name;
+            document.getElementById('shiftStart').value = sh.start;
+            document.getElementById('shiftEnd').value = sh.end;
+            openModal('shiftModal');
+        }
+
+        async function deleteShift(id) {
+            if (confirm('এই শিফট মুছে ফেলতে চান?')) {
+                await dbDelete('shifts', id);
+                backupToLocalStorage();
+                loadShifts();
+                showToast('শিফট মুছে ফেলা হয়েছে');
+            }
+        }
+
+        document.getElementById('shiftForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('shiftId').value || 'sh_' + Date.now();
+            const shift = {
+                id: id,
+                name: document.getElementById('shiftName').value,
+                start: document.getElementById('shiftStart').value,
+                end: document.getElementById('shiftEnd').value
+            };
+            await dbPut('shifts', shift);
+            backupToLocalStorage();
+            closeModal('shiftModal');
+            loadShifts();
+            showToast('✅ শিফট সংরক্ষিত', 'success');
+        });
+
+        // ============ STAFF ============
+        async function loadStaff() {
+            await updateFilters();
+            await filterStaff();
+        }
+
+        async function updateFilters() {
+            const [branches, categories, shifts] = await Promise.all([
+                dbGetAll('branches'), dbGetAll('categories'), dbGetAll('shifts')
+            ]);
+
+            // Update filter dropdowns
+            const branchSelects = ['staffFilterBranch', 'attendanceFilterBranch', 'staffBranch', 'noticeBranch'];
+            branchSelects.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const current = el.value;
+                    el.innerHTML = '<option value="">সকল শাখা</option>' + branches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+                    if (current) el.value = current;
+                }
+            });
+
+            const catSelects = ['staffFilterCategory', 'staffCategory', 'attendanceFilterCategory'];
+            catSelects.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const current = el.value;
+                    el.innerHTML = '<option value="">সকল বিভাগ</option>' + categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                    if (current) el.value = current;
+                }
+            });
+
+            const shiftSelects = ['staffShift', 'attendanceFilterShift'];
+            shiftSelects.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    const current = el.value;
+                    el.innerHTML = '<option value="">সকল শিফট</option>' + shifts.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+                    if (current) el.value = current;
+                }
+            });
+        }
+
+        async function filterStaff() {
+            const branchFilter = document.getElementById('staffFilterBranch').value;
+            const categoryFilter = document.getElementById('staffFilterCategory').value;
+
+            let staff = await dbGetAll('staff');
+            const attendance = await dbGetAll('attendance');
+            const categories = await dbGetAll('categories');
+            const branches = await dbGetAll('branches');
+            const shifts = await dbGetAll('shifts');
+
+            if (branchFilter) staff = staff.filter(s => s.branch === branchFilter);
+            if (categoryFilter) staff = staff.filter(s => s.category === categoryFilter);
+
+            const tbody = document.getElementById('staffTable');
+            tbody.innerHTML = staff.map(s => {
+                const cat = categories.find(c => c.id === s.category);
+                const br = branches.find(b => b.id === s.branch);
+                const sh = shifts.find(sh => sh.id === s.shift);
+                const dutyDays = attendance.filter(a => a.staffId === s.id && a.status === 'present').length;
+
+                return `
+                    <tr>
+                        <td>${s.name}</td>
+                        <td>${cat?.name || '-'}</td>
+                        <td>${br?.name || '-'}</td>
+                        <td>${sh?.name || '-'}</td>
+                        <td>${dutyDays}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editStaff('${s.id}')">✏️</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteStaff('${s.id}')">🗑️</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function openStaffModal() {
+            document.getElementById('staffForm').reset();
+            document.getElementById('staffId').value = '';
+            await updateFilters();
+            openModal('staffModal');
+        }
+
+        async function editStaff(id) {
+            await updateFilters();
+            const s = await dbGet('staff', id);
+            document.getElementById('staffId').value = id;
+            document.getElementById('staffName').value = s.name;
+            document.getElementById('staffCategory').value = s.category;
+            document.getElementById('staffBranch').value = s.branch;
+            document.getElementById('staffShift').value = s.shift;
+            document.getElementById('staffPhone').value = s.phone || '';
+            openModal('staffModal');
+        }
+
+        async function deleteStaff(id) {
+            if (confirm('এই স্টাফ মুছে ফেলতে চান?')) {
+                await dbDelete('staff', id);
+                backupToLocalStorage();
+                filterStaff();
+                showToast('স্টাফ মুছে ফেলা হয়েছে');
+            }
+        }
+
+        document.getElementById('staffForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('staffId').value || 'staff_' + Date.now();
+            const staff = {
+                id: id,
+                name: document.getElementById('staffName').value,
+                category: document.getElementById('staffCategory').value,
+                branch: document.getElementById('staffBranch').value,
+                shift: document.getElementById('staffShift').value,
+                phone: document.getElementById('staffPhone').value
+            };
+            await dbPut('staff', staff);
+            backupToLocalStorage();
+            closeModal('staffModal');
+            filterStaff();
+            showToast('✅ স্টাফ সংরক্ষিত', 'success');
+        });
+
+        // ============ ATTENDANCE ============
+        async function loadAttendanceRecords() {
+            const dateFilter = document.getElementById('attendanceDate').value || new Date().toISOString().split('T')[0];
+            const branchFilter = document.getElementById('attendanceFilterBranch').value;
+            const shiftFilter = document.getElementById('attendanceFilterShift').value;
+
+            document.getElementById('attendanceDate').value = dateFilter;
+            await updateFilters();
+
+            let attendance = await dbGetAll('attendance');
+            const categories = await dbGetAll('categories');
+            const branches = await dbGetAll('branches');
+            const shifts = await dbGetAll('shifts');
+
+            attendance = attendance.filter(a => a.date === dateFilter);
+            if (branchFilter) attendance = attendance.filter(a => a.branch === branchFilter);
+            if (shiftFilter) attendance = attendance.filter(a => a.shift === shiftFilter);
+
+            const tbody = document.getElementById('attendanceTable');
+            tbody.innerHTML = attendance.map(a => {
+                const cat = categories.find(c => c.id === a.category);
+                const br = branches.find(b => b.id === a.branch);
+                const sh = shifts.find(s => s.id === a.shift);
+
+                return `
+                    <tr>
+                        <td>${a.staffName}</td>
+                        <td>${cat?.name || '-'}</td>
+                        <td>${br?.name || '-'}</td>
+                        <td>${sh?.name || '-'}</td>
+                        <td><span class="badge ${a.status === 'present' ? 'badge-success' : 'badge-danger'}">${a.status === 'present' ? '✅ উপস্থিত' : '❌ অনুপস্থিত'}</span></td>
+                        <td>${a.time}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function printAttendance() { window.print(); }
+
+        // ============ REPORTS ============
+        async function loadWorkReports() {
+            const fromDate = document.getElementById('reportFromDate').value;
+            const toDate = document.getElementById('reportToDate').value;
+            const staffFilter = document.getElementById('reportFilterStaff').value;
+
+            let reports = await dbGetAll('reports');
+            const staff = await dbGetAll('staff');
+            const categories = await dbGetAll('categories');
+
+            // Update staff filter
+            const staffSelect = document.getElementById('reportFilterStaff');
+            staffSelect.innerHTML = '<option value="">সকল স্টাফ</option>' + staff.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+            if (staffFilter) staffSelect.value = staffFilter;
+
+            if (fromDate) reports = reports.filter(r => r.date >= fromDate);
+            if (toDate) reports = reports.filter(r => r.date <= toDate);
+            if (staffFilter) reports = reports.filter(r => r.staffId === staffFilter);
+
+            reports.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            const container = document.getElementById('workReportsList');
+            if (reports.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>কোনো রিপোর্ট নেই</p></div>';
+                return;
+            }
+
+            container.innerHTML = reports.map(r => {
+                const cat = categories.find(c => c.id === r.category);
+                return `
+                    <div class="card" style="margin-bottom: 12px;">
+                        <div class="card-header" style="padding-bottom: 10px;">
+                            <strong>${r.staffName}</strong>
+                            <span class="badge badge-info">${r.date}</span>
+                        </div>
+                        <div class="grid-2" style="gap: 12px;">
+                            <div>
+                                <p style="font-weight: 600; color: var(--success);">✅ সম্পন্ন:</p>
+                                <p style="color: var(--text-light);">${r.completedWork || '-'}</p>
+                            </div>
+                            <div>
+                                <p style="font-weight: 600; color: var(--warning);">⏳ অসম্পূর্ণ:</p>
+                                <p style="color: var(--text-light);">${r.pendingWork || '-'}</p>
+                            </div>
+                            <div style="grid-column: 1 / -1;">
+                                <p style="font-weight: 600;">💬 মন্তব্য:</p>
+                                <p style="color: var(--text-light);">${r.comments || '-'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function exportReports() { exportData(); }
+
+        // ============ ANALYTICS ============
+        async function loadAnalytics() {
+            // Setup month selector
+            const monthSelect = document.getElementById('analyticsMonth');
+            const months = [];
+            const now = new Date();
+            for (let i = 0; i < 12; i++) {
+                const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                months.push({
+                    value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`,
+                    label: date.toLocaleDateString('bn-BD', { month: 'long', year: 'numeric' })
+                });
+            }
+            monthSelect.innerHTML = months.map(m => `<option value="${m.value}">${m.label}</option>`).join('');
+
+            const selectedMonth = monthSelect.value || months[0].value;
+            const [year, month] = selectedMonth.split('-').map(Number);
+
+            const attendance = await dbGetAll('attendance');
+            const reports = await dbGetAll('reports');
+            const staff = await dbGetAll('staff');
+            const categories = await dbGetAll('categories');
+
+            const monthAttendance = attendance.filter(a => {
+                const d = new Date(a.date);
+                return d.getFullYear() === year && d.getMonth() === month - 1;
+            });
+
+            const monthReports = reports.filter(r => {
+                const d = new Date(r.date);
+                return d.getFullYear() === year && d.getMonth() === month - 1;
+            });
+
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const totalPresent = monthAttendance.filter(a => a.status === 'present').length;
+            const totalAbsent = monthAttendance.filter(a => a.status === 'absent').length;
+
+            document.getElementById('monthlyDutyDays').textContent = daysInMonth;
+            document.getElementById('monthlyPresent').textContent = totalPresent;
+            document.getElementById('monthlyAbsent').textContent = totalAbsent;
+            document.getElementById('monthlyReports').textContent = monthReports.length;
+
+            // Staff performance
+            const staffPerf = staff.map(s => {
+                const present = monthAttendance.filter(a => a.staffId === s.id && a.status === 'present').length;
+                const absent = monthAttendance.filter(a => a.staffId === s.id && a.status === 'absent').length;
+                const reportsCount = monthReports.filter(r => r.staffId === s.id).length;
+                const percentage = daysInMonth > 0 ? Math.round((present / daysInMonth) * 100) : 0;
+                return { ...s, present, absent, reportsCount, percentage };
+            }).sort((a, b) => b.percentage - a.percentage);
+
+            document.getElementById('staffPerformanceList').innerHTML = staffPerf.slice(0, 10).map(s => `
+                <div class="task-item">
+                    <div>
+                        <strong>${s.name}</strong>
+                        <p style="font-size: 0.8rem; color: var(--text-light);">উপস্থিত: ${s.present} | অনুপস্থিত: ${s.absent} | রিপোর্ট: ${s.reportsCount}</p>
+                    </div>
+                    <span class="badge ${s.percentage >= 80 ? 'badge-success' : s.percentage >= 50 ? 'badge-warning' : 'badge-danger'}">${s.percentage}%</span>
+                </div>
+            `).join('');
+
+            // Category stats
+            const catStats = categories.map(c => {
+                const catStaff = staff.filter(s => s.category === c.id);
+                const catPresent = monthAttendance.filter(a => catStaff.find(s => s.id === a.staffId) && a.status === 'present').length;
+                return { ...c, staffCount: catStaff.length, totalPresent: catPresent };
+            });
+
+            document.getElementById('categoryStatsList').innerHTML = catStats.map(c => `
+                <div class="task-item">
+                    <div>
+                        <strong>${c.icon || '📁'} ${c.name}</strong>
+                        <p style="font-size: 0.8rem; color: var(--text-light);">স্টাফ: ${c.staffCount}</p>
+                    </div>
+                    <span class="badge badge-info">উপস্থিত: ${c.totalPresent}</span>
+                </div>
+            `).join('');
+
+            // Monthly report content
+            document.getElementById('monthlyReportContent').innerHTML = `
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>নাম</th>
+                                <th>বিভাগ</th>
+                                <th>উপস্থিত</th>
+                                <th>অনুপস্থিত</th>
+                                <th>রিপোর্ট</th>
+                                <th>পারফরম্যান্স</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${staffPerf.map(s => {
+                                const cat = categories.find(c => c.id === s.category);
+                                return `
+                                    <tr>
+                                        <td>${s.name}</td>
+                                        <td>${cat?.name || '-'}</td>
+                                        <td>${s.present}</td>
+                                        <td>${s.absent}</td>
+                                        <td>${s.reportsCount}</td>
+                                        <td><span class="badge ${s.percentage >= 80 ? 'badge-success' : s.percentage >= 50 ? 'badge-warning' : 'badge-danger'}">${s.percentage}%</span></td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function printMonthlyReport() { window.print(); }
+
+        // ============ NOTICE ============
+        async function loadNoticeForm() {
+            await updateFilters();
+            const notices = await dbGetAll('notices');
+            const sorted = notices.sort((a, b) => new Date(b.time) - new Date(a.time));
+
+            document.getElementById('noticeHistory').innerHTML = sorted.length === 0 ?
+                '<div class="empty-state"><p>কোনো নোটিশ নেই</p></div>' :
+                sorted.map(n => `
+                    <div class="task-item">
+                        <div style="flex: 1;">
+                            <p>${n.content}</p>
+                            <p style="font-size: 0.8rem; color: var(--text-light);">${new Date(n.time).toLocaleString('bn-BD')}</p>
+                        </div>
+                        <button class="btn btn-sm btn-danger" onclick="deleteNotice('${n.id}')">🗑️</button>
+                    </div>
+                `).join('');
+        }
+
+        document.getElementById('noticeForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const notice = {
+                id: 'notice_' + Date.now(),
+                content: document.getElementById('noticeContent').value,
+                branch: document.getElementById('noticeBranch').value,
+                time: new Date().toISOString(),
+                active: true
+            };
+            await dbAdd('notices', notice);
+            backupToLocalStorage();
+            broadcastSync({ type: 'notice', data: notice });
+            document.getElementById('noticeForm').reset();
+            loadNoticeForm();
+            showToast('📢 নোটিশ প্রকাশিত', 'success');
+        });
+
+        async function deleteNotice(id) {
+            await dbDelete('notices', id);
+            loadNoticeForm();
+            showToast('নোটিশ মুছে ফেলা হয়েছে');
+        }
+
+        // ============ SETTINGS ============
+        async function loadSettings() {
+            const [branches, categories, staff, attendance, reports] = await Promise.all([
+                dbGetAll('branches'), dbGetAll('categories'), dbGetAll('staff'),
+                dbGetAll('attendance'), dbGetAll('reports')
+            ]);
+
+            document.getElementById('sysBranches').textContent = branches.length;
+            document.getElementById('sysCategories').textContent = categories.length;
+            document.getElementById('sysStaff').textContent = staff.length;
+            document.getElementById('sysRecords').textContent = attendance.length + reports.length;
+
+            const lockSetting = await dbGet('settings', 'lockDate');
+            if (lockSetting) {
+                document.getElementById('lockDate').value = lockSetting.value;
+            }
+        }
+
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const current = document.getElementById('currentPassword').value;
+            const newPwd = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmPassword').value;
+
+            if (current !== ADMIN_PASSWORD) {
+                showToast('বর্তমান পাসওয়ার্ড ভুল!', 'danger');
+                return;
+            }
+            if (newPwd !== confirm) {
+                showToast('পাসওয়ার্ড মিলছে না!', 'danger');
+                return;
+            }
+
+            ADMIN_PASSWORD = newPwd;
+            await dbPut('settings', { key: 'adminPassword', value: newPwd });
+            backupToLocalStorage();
+            document.getElementById('passwordForm').reset();
+            showToast('✅ পাসওয়ার্ড আপডেট হয়েছে', 'success');
+        });
+
+        async function updateLockDate() {
+            const date = document.getElementById('lockDate').value;
+            lockDate = date;
+            await dbPut('settings', { key: 'lockDate', value: date });
+            backupToLocalStorage();
+            showToast('🔒 তারিখ লক করা হয়েছে', 'success');
+        }
+
+        // ============ DATA MANAGEMENT ============
+        async function exportData() {
+            const data = {
+                categories: await dbGetAll('categories'),
+                branches: await dbGetAll('branches'),
+                shifts: await dbGetAll('shifts'),
+                staff: await dbGetAll('staff'),
+                attendance: await dbGetAll('attendance'),
+                duties: await dbGetAll('duties'),
+                reports: await dbGetAll('reports'),
+                alerts: await dbGetAll('alerts'),
+                notices: await dbGetAll('notices'),
+                settings: await dbGetAll('settings'),
+                exportDate: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `kacchi_dine_backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('📤 ডেটা এক্সপোর্ট হয়েছে', 'success');
+        }
+
+        async function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    const stores = ['categories', 'branches', 'shifts', 'staff', 'attendance', 'duties', 'reports', 'alerts', 'notices'];
+
+                    for (const store of stores) {
+                        if (data[store]) {
+                            await dbClear(store);
+                            for (const item of data[store]) await dbAdd(store, item);
+                        }
+                    }
+
+                    backupToLocalStorage();
+                    showToast('📥 ডেটা ইমপোর্ট হয়েছে', 'success');
+                    location.reload();
+                } catch (err) {
+                    showToast('ইমপোর্টে সমস্যা: ' + err.message, 'danger');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        async function clearAllData() {
+            if (confirm('সকল ডেটা মুছে ফেলতে চান? এটি পূর্বাবস্থায় ফেরানো যাবে না!')) {
+                const stores = ['categories', 'branches', 'shifts', 'staff', 'attendance', 'duties', 'reports', 'alerts', 'notices'];
+                for (const store of stores) await dbClear(store);
+                backupToLocalStorage();
+                showToast('🗑️ সকল ডেটা মুছে ফেলা হয়েছে', 'warning');
+                location.reload();
+            }
+        }
+
+        // ============ INITIALIZATION ============
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initApp();
+
+            // Enter key for admin login
+            document.getElementById('adminPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') verifyAdmin();
+            });
+
+            // Set default date
+            document.getElementById('attendanceDate').value = new Date().toISOString().split('T')[0];
+        });
+    </script>
+</body>
+</html>
